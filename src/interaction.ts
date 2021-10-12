@@ -19,8 +19,6 @@ const raycast = (event: any, mousex?: number, mousey?: number): THREE.Intersecti
     raycaster.setFromCamera(mouse, camera);
     const intersectingElements = raycaster.intersectObjects(scene.children, true);
 
-    console.log(intersectingElements[0]);
-
     return intersectingElements[0];
 }
 
@@ -60,9 +58,3 @@ const showDetailsAbout = (objectName: string): void => {
 
     details.innerHTML = information[objectName];
 }
-
-/*
-function camera(mouse: THREE.Vector2, camera: any) {
-    throw new Error("Function not implemented.");
-}
-*/

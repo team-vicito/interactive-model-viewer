@@ -75,7 +75,6 @@ const getModelPath = (): string => {
 
 export const render = (): void => {
   renderer.render(scene, camera);
-  console.log(camera);
 }
 
 window.addEventListener("mousedown", mouseClick, true);

@@ -2,10 +2,7 @@
   "name": "interactive-model-viewer",
   "version": "1.0.0",
   "description": "",
-  "main": "build/app.js",
   "scripts": {
-    "build": "tsc ./src/app.ts --outDir build/",
-    "test": "nodemon build/app.js",
     "pack": "webpack"
   },
   "repository": {
