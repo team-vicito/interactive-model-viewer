@@ -2,12 +2,13 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-import { mouseClick } from "./interaction";
+import { loadInformation, mouseClick } from "./interaction";
 
-export let raycaster: THREE.Raycaster, mouse: THREE.Vector2, ccamera: THREE.Camera, scene: THREE.Scene;
+export let raycaster: THREE.Raycaster, mouse: THREE.Vector2, camera: THREE.Camera, scene: THREE.Scene;
 let renderer: THREE.WebGLRenderer, lights: Array<THREE.DirectionalLight> = [];
+let latestModelRequestPath: string;
 
-const initializeLights = () => {
+const initializeLights = (): void => {
   const ambientLight = new THREE.AmbientLight(0xAAAAAA, 0.5);
   scene.add(ambientLight);
 
@@ -24,8 +25,8 @@ const initializeLights = () => {
   scene.add(lights[2]);
 }
 
-const initializeScene = () => {
-  let controls: OrbitControls, loader: GLTFLoader;
+const initializeScene = (): OrbitControls => {
+  let controls: OrbitControls;
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(localStorage.getItem("currentTheme") == "dark" ? 0x121212 : 0xFFFFFF);
@@ -36,19 +37,25 @@ const initializeScene = () => {
 
   document.body.appendChild(renderer.domElement);
 
-  ccamera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 10000);
-  ccamera.rotation.set(-0.4, -0.7, -0.2);
-  ccamera.position.set(-45, 25, 55);
+  camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 10000);
+  camera.rotation.set(-0.4, -0.7, -0.2);
+  camera.position.set(-45, 25, 55);
 
-  controls = new OrbitControls(ccamera, renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
   controls.addEventListener("change", render);
 
   raycaster = new THREE.Raycaster();
   mouse = new THREE.Vector2();
   initializeLights();
 
+  return controls;
+}
+
+const loadModel = (controls: OrbitControls, modelPath: string): void => {
+  let loader: GLTFLoader
+
   loader = new GLTFLoader();
-  loader.load("../public/model-1.glb", (gltf) => {
+  loader.load(`${modelPath}.glb`, (gltf) => {
     const box = new THREE.Box3();
     box.setFromObject(gltf.scene);
     box.getCenter(controls.target);
@@ -56,19 +63,27 @@ const initializeScene = () => {
     scene.add(gltf.scene);
     render();
   });
+
+  loadInformation(`${modelPath}.yml`);
 }
 
-export const render = () => {
-  renderer.render(scene, ccamera);
-  console.log(ccamera);
+const getModelPath = (): string => {
+  if (latestModelRequestPath != null) return latestModelRequestPath;
+
+  return "models/default";
+}
+
+export const render = (): void => {
+  renderer.render(scene, camera);
+  console.log(camera);
 }
 
 window.addEventListener("mousedown", mouseClick, true);
 window.addEventListener("touchstart", mouseClick, true);
-//window.addEventListener("mousemove", mouseMove, true);
 
 try {
-  initializeScene();
+  let controls: OrbitControls = initializeScene();
+  loadModel(controls, getModelPath());
 } catch (error) {
   console.error(error);
 

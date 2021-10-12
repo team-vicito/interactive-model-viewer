@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "moduleResolution": "node",
     "outDir": "./build/",
+    "baseUrl": "./src/",
     "module": "esnext",
     "target": "es5",
-    "baseUrl": "./src/",
     "lib": [
       "es2015",
       "dom"

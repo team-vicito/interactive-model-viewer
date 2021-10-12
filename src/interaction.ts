@@ -1,6 +1,9 @@
-import { mouse, raycaster, render, scene, ccamera } from "./app";
+import * as THREE from "three";
+import * as yaml from "js-yaml";
 
-const raycast = (event: any, mousex?: number, mousey?: number) => {
+import { mouse, raycaster, render, scene, camera } from "./app";
+
+const raycast = (event: any, mousex?: number, mousey?: number): THREE.Intersection => {
     const touchlist = event.changedTouches;
 
     // can be simplified
@@ -13,7 +16,7 @@ const raycast = (event: any, mousex?: number, mousey?: number) => {
     }
 
     render();
-    raycaster.setFromCamera(mouse, ccamera);
+    raycaster.setFromCamera(mouse, camera);
     const intersectingElements = raycaster.intersectObjects(scene.children, true);
 
     console.log(intersectingElements[0]);
@@ -21,7 +24,7 @@ const raycast = (event: any, mousex?: number, mousey?: number) => {
     return intersectingElements[0];
 }
 
-const checkShowDetailsFunction = () => {
+const checkShowDetailsFunction = (): boolean => {
     try {
         if (showDetailsAbout) return true;
     } catch (_) {
@@ -29,84 +32,37 @@ const checkShowDetailsFunction = () => {
     }
 }
 
-export const mouseMove = (event: any) => {
-    const intersected = raycast(event);
-    const canvas = document.querySelector("canvas");
-
-    canvas.style.cursor = "grab";
-
-    if (!checkShowDetailsFunction()) return;
-    if (intersected) canvas.style.cursor = "pointer";
-}
-
-export const mouseClick = (event: any) => {
+export const mouseClick = (event: any): void => {
     const intersected = raycast(event);
 
     if (!checkShowDetailsFunction()) return;
     if (intersected) showDetailsAbout(intersected.object.name);
 }
 
-const abstractifyName = (objectName: string) => {
-    switch (objectName) {
-        case "RadVL":
-        case "RadVR":
-        case "RadHL":
-        case "RadHR":
-            return "Rad";
-        case "FlgVM":
-        case "FlgVMS":
-            return "FlgVM"
-        case "FlgVL":
-        case "FlgVR":
-            return "FlgV"
-        case "FlgHL":
-        case "FlgHR":
-            return "FlgH";
-        case "FeV":
-        case "FeH":
-        case "TehV":
-        case "TehH":
-            return "Fe";
-        case "SkML":
-        case "SkMR":
-        case "NmcL":
-        case "NmcR":
-            return "SkM";
-        case "SkHL":
-        case "SkHR":
-            return "SkH";
-        case "LogoL":
-        case "LogoR":
-            return "Chassis"
-        default:
-            return objectName;
-    }
-}
+let information: unknown;
 
-let json;
-
-const loadInformation = () => {
+export const loadInformation = (configPath: string): void => {
     const _xobj = new XMLHttpRequest();
 
     _xobj.overrideMimeType("application/json");
-    _xobj.open("GET", "public/model-1.yml", true);
+    _xobj.open("GET", configPath, true);
     _xobj.onreadystatechange = () => {
         if (_xobj.readyState == 4 && _xobj.status == 200) {
-            json = JSON.parse(_xobj.responseText);
+            information = yaml.load(_xobj.responseText);
         }
     };
 
     _xobj.send(null);
 }
 
-const showDetailsAbout = (objectName) => {
+const showDetailsAbout = (objectName: string): void => {
     const details = document.querySelector(".details");
 
-    details.innerHTML = json[abstractifyName(objectName)];
+    details.innerHTML = information[objectName];
 }
 
-loadInformation();
-
+/*
 function camera(mouse: THREE.Vector2, camera: any) {
     throw new Error("Function not implemented.");
 }
+*/

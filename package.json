@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/team-vicito/interactive-model-viewer#readme",
   "devDependencies": {
+    "@types/js-yaml": "^4.0.3",
     "@types/three": "^0.131.0",
     "nodemon": "^2.0.12",
     "ts-loader": "^9.2.5",
@@ -28,6 +29,7 @@
     "webpack-cli": "^4.8.0"
   },
   "dependencies": {
+    "js-yaml": "^4.1.0",
     "three": "^0.131.3"
   }
 }
