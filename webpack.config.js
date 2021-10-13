@@ -7,7 +7,7 @@ module.exports = {
     filename: "viewer.js",
     path: path.resolve(__dirname, "dist"),
     libraryExport: "default",
-    libraryTarget: "var",
+    libraryTarget: "umd",
     library: "viewer"
   },
   module: {
