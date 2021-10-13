@@ -21,7 +21,7 @@
     var socket = io();
 
     socket.on("rfid", (data) => {
-      console.log(data);
+      setModelPath(data);
     });
   </script>
 </body>
