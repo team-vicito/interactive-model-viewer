@@ -67,7 +67,7 @@ const loadModel = (controls: OrbitControls, modelPath: string): void => {
   loadInformation(`${modelPath}.yml`);
 }
 
-const setModelPath = (path: string): void => {
+export const setModelPath = (path: string): void => {
   latestModelRequestPath = path;
 }
 
