@@ -6,6 +6,7 @@ module.exports = {
   output: {
     filename: "viewer.js",
     path: path.resolve(__dirname, "dist"),
+    libraryExport: "default",
     libraryTarget: "window",
     library: "viewer"
   },
