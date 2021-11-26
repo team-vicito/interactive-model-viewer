@@ -1,11 +1,13 @@
 import * as THREE from "three";
+import * as io from "socket.io-client";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 import { loadInformation, mouseClick } from "./interaction";
 
 export let raycaster: THREE.Raycaster, mouse: THREE.Vector2, camera: THREE.Camera, scene: THREE.Scene;
-let renderer: THREE.WebGLRenderer, lights: Array<THREE.DirectionalLight> = [];
+let renderer: THREE.WebGLRenderer, lights: Array<THREE.DirectionalLight> = [], controls: OrbitControls;
 let latestModelRequestPath: string;
 
 const initializeLights = (): void => {
@@ -25,9 +27,7 @@ const initializeLights = (): void => {
   scene.add(lights[2]);
 }
 
-const initializeScene = (): OrbitControls => {
-  let controls: OrbitControls;
-
+const initializeScene = (): void => {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(localStorage.getItem("currentTheme") == "dark" ? 0x121212 : 0xFFFFFF);
 
@@ -35,7 +35,7 @@ const initializeScene = (): OrbitControls => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.outputEncoding = THREE.sRGBEncoding;
 
-  document.body.appendChild(renderer.domElement);
+  document.body.replaceChild(renderer.domElement, document.body.querySelector("canvas"));
 
   camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 10000);
   camera.rotation.set(-0.4, -0.7, -0.2);
@@ -47,15 +47,19 @@ const initializeScene = (): OrbitControls => {
   raycaster = new THREE.Raycaster();
   mouse = new THREE.Vector2();
   initializeLights();
-
-  return controls;
 }
 
 const loadModel = (controls: OrbitControls, modelPath: string): void => {
+  let dracoLoader: DRACOLoader = new DRACOLoader();
   let loader: GLTFLoader
 
+  dracoLoader.setDecoderPath("./");
+  dracoLoader.setDecoderConfig({type: "js"})
+
   loader = new GLTFLoader();
+  loader.setDRACOLoader(dracoLoader);
   loader.load(`${modelPath}.glb`, (gltf) => {
+
     const box = new THREE.Box3();
     box.setFromObject(gltf.scene);
     box.getCenter(controls.target);
@@ -68,7 +72,13 @@ const loadModel = (controls: OrbitControls, modelPath: string): void => {
 }
 
 export const setModelPath = (path: string): void => {
+  // enable loadinga
   latestModelRequestPath = path;
+
+  scene.clear();
+  initializeScene();
+  loadModel(controls, path);
+  // disable loading
 }
 
 const getModelPath = (): string => {
@@ -84,8 +94,14 @@ export const render = (): void => {
 window.addEventListener("mousedown", mouseClick, true);
 window.addEventListener("touchstart", mouseClick, true);
 
+let socket = io.io();
+
+socket.on("rfid", (id: string) => {
+  setModelPath(`models/${id}`);
+});
+
 try {
-  let controls: OrbitControls = initializeScene();
+  initializeScene();
   loadModel(controls, getModelPath());
 } catch (error) {
   console.error(error);
