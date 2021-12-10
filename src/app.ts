@@ -65,20 +65,22 @@ const loadModel = (controls: OrbitControls, modelPath: string): void => {
     box.getCenter(controls.target);
 
     scene.add(gltf.scene);
-    render();
   });
 
+  (document.body.querySelector(".overlay") as HTMLElement).style.display = "none";
+
   loadInformation(`${modelPath}.yml`);
+  render();
 }
 
 export const setModelPath = (path: string): void => {
-  // enable loadinga
+  (document.body.querySelector(".overlay") as HTMLElement).style.display = "block";
+
   latestModelRequestPath = path;
 
   scene.clear();
   initializeScene();
   loadModel(controls, path);
-  // disable loading
 }
 
 const getModelPath = (): string => {

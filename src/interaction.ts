@@ -47,6 +47,7 @@ export const loadInformation = (configPath: string): void => {
     _xobj.onreadystatechange = () => {
         if (_xobj.readyState == 4 && _xobj.status == 200) {
             information = yaml.load(_xobj.responseText);
+            console.log(information);
         }
     };
 

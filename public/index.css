@@ -3,6 +3,28 @@ body {
     padding: 0;
 }
 
+p {
+    font-family: "Montserrat", sans-serif;
+    color: #C61535;
+    font-size: 22px;
+}
+
+.overlay {
+    display: flex;
+
+    width: 100vw;
+    height: 100vh;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.spinner {
+    stroke-dasharray: 100%;
+    stroke-dashoffset: 200%;
+    animation: animate forwards linear infinite 1s;
+} 
+
 .details {
     position: absolute;
 
@@ -11,6 +33,22 @@ body {
     font-size: 16px;
     color: #FFFFFF;
     font-family: "sans-serif";
+}
+
+canvas {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100vw;
+    height: 100vh;
+}
+
+@keyframes animate {
+    100% {
+        stroke-dashoffset: 0;
+    } 
 }
 
 /* TODO: Add error and info */
