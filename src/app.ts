@@ -85,6 +85,7 @@ window.addEventListener("mousedown", mouseClick, true);
 window.addEventListener("touchstart", mouseClick, true);
 
 try {
+  setModelPath(`models/${new URLSearchParams(window.location.search).get("m")}`);
   let controls: OrbitControls = initializeScene();
   loadModel(controls, getModelPath());
 } catch (error) {
